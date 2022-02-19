@@ -1,0 +1,34 @@
+enum IpAddr {
+    V4(String), // V4(u8, u8, u8, u8)
+    V6(String), // V6(String) のように異なっていてもよい。
+}
+
+/*
+    Scala のこれと同じ感じで、列挙しつつそのときの値も持たせられる
+
+    sealed abstract class IpAddr(val addr: String)
+    case class V4 extends IpAddr("127.0.0.1")
+    case class V6 extends IpAddr("::1")
+ */
+fn main_1() {
+    let home = IpAddr::V4(String::from("127.0.0.1"));
+    let loopback = IpAddr::V6(String::from("::1"));
+}
+
+/*
+    enum のうち、このときだけ処理をして他はスルーしたいとき if let が使える
+ */
+fn main_2() {
+    let some_u8_value = Some(0u8);
+
+    match some_u8_value {
+        // Some(0) => println!("zero"), 必ずこの分岐に入る
+        Some(3) => println!("three"),
+        _ => (), // 何もしない
+    }
+
+    // 上と同じ
+    if let Some(3) = some_u8_value {
+        println!("three");
+    }
+}
