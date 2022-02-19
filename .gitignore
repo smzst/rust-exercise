@@ -14,4 +14,8 @@ Cargo.lock
 *.pdb
 
 /rust-exercise.iml
+
+# IntelliJ が生成するやつ
 /.idea/
+# 手元でとりあえず動かしてみたいとき用
+sandbox/

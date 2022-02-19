@@ -1,0 +1,18 @@
+/*
+    ダングリングエラーになるコード（コンパイル時にチェックしてくれる）
+ */
+fn main() {
+    let ref_to_nothing = dangle();
+}
+fn dangle() -> &String {
+    let s = String::from("hello");
+    &s // s への参照を返しているが、ブロックをメモリが開放されてしまう
+}
+
+/*
+    解決策。所有権をムーブする
+ */
+fn no_dangle() -> String {
+    let s = String::from("hello");
+    s
+}

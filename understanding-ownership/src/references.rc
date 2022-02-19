@@ -1,0 +1,107 @@
+/*
+    参照を使わないとこうなる
+ */
+fn main_1() {
+    let s1 = String::from("hello");
+    let (s2, len) = calc_length(s1);
+    println!("The length of '{}' is {}.", s2, len);
+}
+
+fn calc_length(s: String) -> (String, usize) {
+    let length = s.len();
+    (s, length) // s1 の値だけ知りたいんだけど、s1 の所有権を握っちゃってるから返さないとならない
+}
+
+/*
+    参照を使うとこうなる
+ */
+fn main_2() {
+    let s1 = String::from("hello");
+    let len = calc_length_ref(&s1); // s1 の値だけ参照してるので s1 はまだ生きている
+    println!("The length of '{}' is {}.", s1, len);
+}
+
+fn calc_length_ref(s: &String) -> usize { // &String が借用
+    s.len()
+}
+
+/*
+    借用は変更できない
+ */
+fn main_3() {
+    let s = String::from("hello");
+    change(&s);
+}
+fn change(some_string: &String) { // 不変で借用した値は変更できない
+    some_string.push_str(", world");
+}
+
+/*
+    借用を変更する場合
+ */
+fn main_4() {
+    let mut s = String::from("hello"); // s は書き換えられることがあるので mut で
+    change(&mut s);
+    println!("{}", s);
+}
+
+fn change_mut(some_string: &mut String) { // 関数の戻り値で s を返すの面倒だから参照にする。あと変更もしたいので mut にする
+    some_string.push_str(", world");
+}
+
+/*
+    可変な参照は 1 つだけ。ただし、不変な参照はいくらでも
+ */
+fn main_5() {
+    let s = String::from("hello");
+    let r1 = &s; // 不変な参照はいくらでもできる
+    let r2 = &s;
+    println!("{}, {}, {}",s,r1,r2); // hello, hello, hello
+}
+
+fn main_6() {
+    let mut s = String::from("hello"); // 可変な参照があるのでここも可変であること
+    let r1 = &mut s;
+    let r2 = &mut s; // 一度に s を可変参照はできないというエラー
+    println!("{}, {}", r1,r2);
+}
+
+fn main_7() {
+    let mut s = String::from("hello");
+
+    // 不変な参照があるとき、さらに可変の参照を得ることはできない
+    // この状態から、x, y を使ったらアウト
+    let x= &s;
+    let y = &mut s;
+
+    x.len();
+    y.len();
+}
+
+// 動く。s.clear() で可変の参照が行われているが、x を使っていない
+fn main_8() {
+    let mut s = String::from("hello");
+    let x = &s; // この文を書いた時点では不変の参照は起きていない。使われてない。
+    s.clear();
+}
+
+// 動かない。
+fn main_9() {
+    let mut s = String::from("hello");
+    let x = &s; // これは定義しただけ
+    s.clear(); // 可変の参照が実施
+    x.len(); // ここで不変の参照が実施されている
+}
+
+// 動く。
+fn main_10() {
+    let mut s = String::from("hello");
+    let x = &s; // 不変の参照の定義
+    // ↑
+    // この間に可変な参照がなければいいということ
+    // > 不変な参照をしている間は、可変な参照をすることはできません
+    // ↓
+    x.len(); // 不変の参照
+
+    s.clear(); // 可変な参照
+}

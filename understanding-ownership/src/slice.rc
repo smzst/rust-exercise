@@ -1,0 +1,97 @@
+/*
+    文字列の最初の単語を抜き出す関数を考える
+ */
+fn main_1() {
+    let mut s = String::from("hello world");
+    let word = first_word_usize(&s);
+
+    s.clear(); // 参照元の s をクリアしたので、word の長さは 0 になるのが望ましいが、この場合 5 が出力される。s の状態と紐づいて欲しいはずである
+
+    println!("{}", word);
+}
+
+fn first_word_usize(s: &String) -> usize{
+    let bytes = s.as_bytes();
+
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            return i; // スペースがあったらそこまでの index を返す、つまりそこまでの長さになる
+        }
+    }
+    s.len() // スペースがなければ文字列全体の長さ
+}
+
+/*
+    slice を使って書く
+ */
+fn main_2() {
+    let s = String::from("hello");
+
+    let slice = &s[0..2]; // 終点の値はスライスの (終端位置 + 1)。スライスの長さは (終点 - 始点) なのでこの場合 0 文字目から 2 文字
+    let slice = &s[..2]; // こうとも
+
+    println!("{}", slice); // he
+
+    let len = s.len();
+    let slice = &s[3..len]; // 4 文字目から 5 - 3 で 2 文字を参照
+    let slice = &s[3..]; // こうとも
+
+    println!("{}", slice); // lo
+}
+
+/*
+    main_1() をスライスを使って書く
+ */
+fn main_3() {
+    let mut s = String::from("hello world");
+    let word = first_word_string(&s);
+
+    s.clear(); // 参照元の s をクリアしたので、word の長さは 0 になるのが望ましいが、この場合 5 が出力される。s の状態と紐づいて欲しいはずである
+
+    println!("{}", word);
+}
+
+fn first_word_string(s: &String) -> &str{ // &str: 文字列スライスを意味する
+    let bytes = s.as_bytes();
+
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            return &s[0..i]; // 半角スペースまでたどり着いているということは、..i が (終端位置 + 1) になっている
+        }
+    }
+    &s[..] // [..] は [0..len] と同じで最初から最後まで
+}
+
+/*
+    String のスライスは &str と同じだよ
+ */
+fn main_4() {
+    // まず、文字列リテラルはスライスである。バイナリ（str 型）の特定の位置を示すスライス
+    let str: &str = "str";
+    // ※再掲: String という型はコンパイル時にサイズが分からないなどの理由でスタックではなくヒープに保存したい値
+    let string: String = String::from("str");
+    let str: &str = *string[..]; // [0..3] を不変で参照。`str` は、`string` の 1 バイト目へのポインタと 3 という長さを保持するスライスということになる
+}
+
+/*
+    &String で借用していた関数は &str の方がカバー範囲が広くなる。なぜなら &String から &str が作れるから
+ */
+fn main_5() {
+    let my_string: String = String::from("hello world");
+    let word = first_word_str(&my_string[..]);
+
+    let my_string_literal = "hello world";
+    let word = first_word_str(&my_string_literal[..]);
+    let word = first_word_str(my_string_literal);
+}
+
+fn first_word_str(s: &str) -> &str{ // 引数 s: &String → &str に
+    let bytes = s.as_bytes();
+
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            return &s[0..i];
+        }
+    }
+    &s[..]
+}
