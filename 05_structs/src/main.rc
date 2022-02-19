@@ -1,0 +1,38 @@
+struct User {
+    username: String,
+    email: String,
+    sign_in_count: u64,
+    active: bool,
+}
+
+/*
+    すでに存在するインスタンスの値を使って新しいインスタンスを作りたいとき
+ */
+fn main_1() {
+    let user1 = User {
+        username: String::from("user1"),
+        email: String::from("user1@example.com"),
+        sign_in_count: 1,
+        active: true,
+    };
+
+    let user2 = User {
+        email: String::from("user2@example.com"),
+        username: String::from("user1"),
+        ..user1 // まだ埋めてないフィールドを user1 の値で埋める
+    };
+}
+
+impl Rectangle {
+    fn square(size: u32) -> Rectangle { // self 引数を取らない関数を関連関数という。:: で呼び出せるもの
+        Rectangle { width: size, height: size }
+    }
+
+    fn area(&self) -> u32 { // Java の this と同じ
+        self.width * self.height
+    }
+
+    fn can_hold(&self, that: &Rectangle) -> bool {
+        self.width > that.width && self.height > that.height
+    }
+}
